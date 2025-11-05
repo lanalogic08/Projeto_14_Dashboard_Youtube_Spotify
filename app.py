@@ -5,15 +5,19 @@ import pandas as pd
 st.set_page_config(page_title="Dashboard Musical", page_icon="🎵", layout="wide")
 
 ## 1.Coloque o titulo do dashboard
+st.title('Artistas populares')
 
 ## 2.Carregar os dados do arquivo 'Dados_Artistas.csv'
-df = pd.read_csv('Dados_Artistas.csv')
+df = pd.read_parquet('Dados_Artistas.parquet')
 
 # Único filtro, adicionando opção 'TODOS'
 artista = st.selectbox("Escolha um Artista:", ['TODOS'] + list(df['Artist'].unique()))
 
 ## 3.Filtrar os dados com base na seleção do artista
-
+if artista == 'TODOS':
+    dados = df
+else:
+    dados = df[df['Artist']==artista]
 
 # Apenas 3 métricas
 st.write("### 📈 Métricas")
@@ -46,9 +50,10 @@ with container:
         st.line_chart(comparacao)
 
 ## 4. Escreva o título da tabela
-
+st.write("Músicas com mais streams no spotify")
 
 # Apenas ordenar por Stream e pegar os top 10
 top_10_spotify = dados.sort_values('Stream', ascending=False).head(10)[['Track', 'Artist', 'Stream']]
 
 ## 5. Mostre a tabela que criamos acima
+st.dataframe(top_10_spotify, use_container_width=True)
